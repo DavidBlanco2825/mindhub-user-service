@@ -46,8 +46,8 @@ With built-in API documentation via Swagger, you can easily explore and test the
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/DavidBlanco2825/minhub-reactive.git
-    cd minhub-reactive
+    git clone https://github.com/DavidBlanco2825/mindhub-user-service.git
+    cd mindhub-user-service
     ```
 
 2. **Build the project**:
