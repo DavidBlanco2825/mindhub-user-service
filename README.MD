@@ -4,35 +4,32 @@
 
 ## Overview
 
-This project is a simple implementation of a basic CRUD (Create, Read, Update, Delete) application using Spring Data R2DBC and H2 as the in-memory database. It is designed to demonstrate how to efficiently manage data in a reactive environment with Spring Boot. The project includes a fully functional API for managing items, which can be easily extended or integrated into larger applications.
+**UserService** is a microservice within the **NoteList** application, dedicated to managing user-related operations. It provides a comprehensive RESTful API to perform Create, Read, Update, and Delete (CRUD) operations on users, serving as a crucial component in handling user-related data within the application.
 
-This application leverages Spring Data R2DBC to provide non-blocking database access, ensuring high performance and scalability, especially in environments where handling large numbers of concurrent requests is essential.
+TaskService is built using **Spring WebFlux**, embracing reactive programming principles. This enables the service to handle asynchronous data streams and provide non-blocking IO operations, making it highly scalable and capable of efficiently managing large volumes of concurrent requests with minimal resource consumption.
 
-With built-in API documentation via Swagger, you can easily explore and test the endpoints, making it an excellent starting point for both learning and real-world application development.
+### Key Features
 
-## Features
+- **Full CRUD Functionality**: Seamless management of user lifecycle through a robust API.
+- **Reactive Programming**: Powered by Spring WebFlux for building responsive, non-blocking, and event-driven applications.
+- **High Scalability**: Designed to scale effortlessly with increasing loads, suitable for high-traffic environments.
+- **Seamless Integration**: Designed to integrate effortlessly with other microservices within the NoteList application.
+- **API Documentation**: Integrated Swagger documentation provides an interactive interface to explore the API.
 
-- **User Management**: Create, view, update, and delete users.
-- **API Documentation**: Comprehensive API documentation with Swagger.
+As an integral part of the NoteList application, TaskService ensures a responsive, reliable, and efficient backend for managing tasks, enhancing the overall user experience.
 
 ## Technologies Used
 
-- **Spring Boot**: The foundation for the application, providing a robust and easy-to-use framework for developing Java-based applications.
-
-- **Spring WebFlux**: A fully non-blocking reactive framework used for building asynchronous, event-driven web applications.
-
-- **Spring Data R2DBC**: Provides reactive database connectivity and easy integration with relational databases using R2DBC.
-
-- **H2 Database**: An in-memory database used for development and testing, allowing for rapid prototyping without the need for an external database.
-
-- **R2DBC H2**: The R2DBC driver for H2, enabling reactive interaction with the H2 database.
-
-- **SpringDoc OpenAPI**: Automatically generates comprehensive API documentation for the WebFlux application using OpenAPI standards.
-
-- **Reactor Test**: A set of utilities and classes for testing reactive streams in a Spring WebFlux environment.
-
-- **Spring Boot Test**: Provides essential testing utilities and support for testing Spring Boot applications, including integration and unit testing capabilities.
-
+- **Spring Boot**: The backbone framework for the application, ensuring a robust and streamlined development experience.
+- **Spring WebFlux**: A reactive framework that facilitates the development of asynchronous and event-driven web applications.
+- **Spring Data R2DBC**: Enables reactive interactions with relational databases, fully compatible with Spring WebFlux.
+- **H2 Database**: An in-memory database used for development and testing, promoting quick and efficient prototyping.
+- **PostgreSQL**: A robust, production-ready relational database supported by the service for scalable data management.
+- **R2DBC H2 Driver**: Provides reactive database connectivity to the H2 database.
+- **R2DBC PostgreSQL Driver**: Enables reactive interaction with PostgreSQL databases.
+- **SpringDoc OpenAPI**: Automatically generates detailed API documentation, adhering to OpenAPI standards.
+- **Reactor Test**: A toolkit for testing reactive streams within the Spring WebFlux environment.
+- **Spring Boot Test**: Comprehensive testing support, including both unit and integration tests for Spring Boot applications.
 
 ## Getting Started
 
@@ -41,6 +38,7 @@ With built-in API documentation via Swagger, you can easily explore and test the
 - **Java 17** or later
 - **Maven 3.6** or later
 - **Git** (for version control)
+- **PostgreSQL** (for production setup)
 
 ### Installation
 
@@ -61,13 +59,13 @@ With built-in API documentation via Swagger, you can easily explore and test the
     ```
 
 4. **Access the application**:
-   - The API will be available at `http://localhost:8080/users`.
-   - Swagger API documentation can be accessed at `http://localhost:8080/webjars/swagger-ui/index.html`.
+    - The API is available at `http://localhost:8080/api/users`.
+    - Swagger API documentation can be accessed at `http://localhost:8080/webjars/swagger-ui/index.html`.
 
 ## API Endpoints
 
-- **`GET /api/users`**: Retrieve all users.
-- **`GET /api/users/{id}`**: Retrieve an user by ID.
 - **`POST /api/users`**: Create a new user.
-- **`PUT /api/users/{id}`**: Update an user.
-- **`DELETE /api/users/{id}`**: Delete an user.
+- **`GET /api/users/{id}`**: Retrieve a user by ID.
+- **`GET /api/users`**: Retrieve all users.
+- **`PUT /api/users/{id}`**: Update an existing user by ID.
+- **`DELETE /api/users/{id}`**: Delete a user by ID.
