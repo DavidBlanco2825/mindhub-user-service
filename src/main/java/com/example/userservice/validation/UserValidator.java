@@ -6,6 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import static com.example.userservice.commons.Constants.EMAIL_IS_NOT_VALID;
+import static com.example.userservice.commons.Constants.EMAIL_IS_REQUIRED;
+import static com.example.userservice.commons.Constants.NAME_IS_REQUIRED;
+import static com.example.userservice.commons.Constants.NAME_MIN_LENGTH;
+import static com.example.userservice.commons.Constants.PASSWORD_IS_REQUIRED;
+import static com.example.userservice.commons.Constants.PASSWORD_MIN_LENGTH;
+
 @Component
 public class UserValidator implements Validator {
 
@@ -18,25 +25,28 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         UserRequestDTO user = (UserRequestDTO) target;
 
+        int nameMinLength = 3;
+        int passwordMinLength = 8;
+
         // Validate name
         if (StringUtils.isBlank(user.getName())) {
-            errors.rejectValue("name", "user.name.empty", "Name is required and cannot be empty or blank.");
-        } else if (user.getName().length() < 3) {
-            errors.rejectValue("name", "user.name.short", "Name must be at least 3 characters long.");
+            errors.rejectValue("name", "user.name.empty", NAME_IS_REQUIRED);
+        } else if (user.getName().length() < nameMinLength) {
+            errors.rejectValue("name", "user.name.short", String.format(NAME_MIN_LENGTH, nameMinLength));
         }
 
         // Validate email
         if (StringUtils.isBlank(user.getEmail())) {
-            errors.rejectValue("email", "user.email.empty", "Email is required and cannot be empty or blank.");
+            errors.rejectValue("email", "user.email.empty", EMAIL_IS_REQUIRED);
         } else if (!user.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            errors.rejectValue("email", "user.email.invalid", "Email is not valid.");
+            errors.rejectValue("email", "user.email.invalid", EMAIL_IS_NOT_VALID);
         }
 
         // Validate password
         if (StringUtils.isBlank(user.getPassword())) {
-            errors.rejectValue("password", "user.password.empty", "Password is required and cannot be empty or blank.");
-        } else if (user.getPassword().length() < 8) {
-            errors.rejectValue("password", "user.password.short", "Password must be at least 8 characters long.");
+            errors.rejectValue("password", "user.password.empty", PASSWORD_IS_REQUIRED);
+        } else if (user.getPassword().length() < passwordMinLength) {
+            errors.rejectValue("password", "user.password.short", String.format(PASSWORD_MIN_LENGTH, passwordMinLength));
         }
     }
 }
