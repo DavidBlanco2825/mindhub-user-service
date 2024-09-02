@@ -41,6 +41,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(type = "string", example = "Invalid user data."))),
+            @ApiResponse(responseCode = "409", description = "Conflict.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "There is a user already created with that email."))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(type = "string", example = "An error occurred while processing your request.")))
@@ -93,14 +96,6 @@ public class UserController {
                     }
                 });
     }
-/*    public Flux<UserResponseDTO> getAllUsers() {
-        return userService.getAllUsers();
-    }*/
-/*    public Flux<ResponseEntity<UserResponseDTO>> getAllUsers() {
-        return userService.getAllUsers()
-                .map(userResponseDTO -> ResponseEntity.status(HttpStatus.OK).body(userResponseDTO))
-                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
-    }*/
 
     @PutMapping("/{id}")
     @Operation(summary = "Update User", description = "Updates an existing user.")

@@ -12,17 +12,15 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.userservice.config.Constants.EMAIL_ALREADY_EXISTS;
+import static com.example.userservice.commons.Constants.EMAIL_ALREADY_EXISTS;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({UserNotFoundException.class})
     public Mono<ResponseEntity<ErrorResponse>> handleResourceNotFoundException(UserNotFoundException unfe, ServerWebExchange exchange) {
-        ErrorResponse errorDetails = new ErrorResponse(
-                LocalDateTime.now(),
-                unfe.getMessage(),
-                exchange.getRequest().getPath().value());
+
+        ErrorResponse errorDetails = getErrorDetails(unfe.getMessage(), exchange);
 
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails));
     }
@@ -31,22 +29,17 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<ErrorResponse>> handleBadRequestException(BadRequestException bre, ServerWebExchange exchange) {
         String errorMessage = extractErrorMessage(bre);
 
-        ErrorResponse errorDetails = new ErrorResponse(
-                LocalDateTime.now(),
-                errorMessage,
-                exchange.getRequest().getPath().value());
+        ErrorResponse errorDetails = getErrorDetails(errorMessage, exchange);
 
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails));
     }
 
-    @ExceptionHandler(Exception.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleInternalServerError(Exception ex, ServerWebExchange exchange) {
-        ErrorResponse errorDetails = new ErrorResponse(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                exchange.getRequest().getPath().value());
+    @ExceptionHandler(DataAlreadyExistsException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleDataAlreadyExistsException(DataAlreadyExistsException daee, ServerWebExchange exchange) {
 
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails));
+        ErrorResponse errorDetails = getErrorDetails(daee.getMessage(), exchange);
+
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails));
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class})
@@ -58,12 +51,24 @@ public class GlobalExceptionHandler {
             errorMessage = EMAIL_ALREADY_EXISTS;
         }
 
-        ErrorResponse errorDetails = new ErrorResponse(
-                LocalDateTime.now(),
-                errorMessage,
-                exchange.getRequest().getPath().value());
+        ErrorResponse errorDetails = getErrorDetails(errorMessage, exchange);
 
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleInternalServerError(Exception ex, ServerWebExchange exchange) {
+
+        ErrorResponse errorDetails = getErrorDetails(ex.getMessage(), exchange);
+
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails));
+    }
+
+    private ErrorResponse getErrorDetails(String message, ServerWebExchange exchange) {
+        return new ErrorResponse(
+                LocalDateTime.now(),
+                message,
+                exchange.getRequest().getPath().value());
     }
 
     private String extractErrorMessage(BadRequestException bre) {

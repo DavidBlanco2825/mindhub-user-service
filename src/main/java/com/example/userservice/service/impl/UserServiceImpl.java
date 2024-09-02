@@ -4,6 +4,7 @@ import com.example.userservice.dto.UserRequestDTO;
 import com.example.userservice.dto.UserResponseDTO;
 import com.example.userservice.entity.UserEntity;
 import com.example.userservice.exception.BadRequestException;
+import com.example.userservice.exception.DataAlreadyExistsException;
 import com.example.userservice.exception.UserNotFoundException;
 import com.example.userservice.mapper.UserMapper;
 import com.example.userservice.repository.UserRepository;
@@ -17,7 +18,8 @@ import org.springframework.validation.Errors;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.example.userservice.config.Constants.USER_NOT_FOUND_ID;
+import static com.example.userservice.commons.Constants.EMAIL_ALREADY_EXISTS;
+import static com.example.userservice.commons.Constants.USER_NOT_FOUND_ID;
 
 @Slf4j
 @Service
@@ -30,23 +32,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<UserResponseDTO> createUser(UserRequestDTO userRequestDTO) {
-        return validateUserRequest(userRequestDTO)
-                .then(Mono.defer(() -> {
-                    UserEntity user = userMapper.toEntity(userRequestDTO);
-                    return userRepository.save(user)
-                            .map(userMapper::toResponseDto).log();
-                }));
-    }
-
-    private Mono<Void> validateUserRequest(UserRequestDTO userRequestDTO) {
-        Errors errors = new BeanPropertyBindingResult(userRequestDTO, "userRequestDTO");
-        userValidator.validate(userRequestDTO, errors);
-
-        if (errors.hasErrors()) {
-            return Mono.error(new BadRequestException(errors.getFieldErrors()));
-        }
-
-        return Mono.empty();
+        return userRepository.existsByEmail(userRequestDTO.getEmail())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new DataAlreadyExistsException(EMAIL_ALREADY_EXISTS));
+                    }
+                    return validateUserRequest(userRequestDTO)
+                            .then(createAndSaveUser(userRequestDTO));
+                });
     }
 
     @Override
@@ -71,18 +64,36 @@ public class UserServiceImpl implements UserService {
                         .map(userMapper::toResponseDto));
     }
 
-    private Mono<UserEntity> updateExistingUser(UserEntity existingUser, UserRequestDTO newUserData) {
-        existingUser.setName(newUserData.getName());
-        existingUser.setEmail(newUserData.getEmail());
-        existingUser.setPassword(newUserData.getPassword());
-        return userRepository.save(existingUser);
-    }
-
     @Override
     public Mono<Void> deleteUser(Long id) {
         return userRepository.existsById(id)
                 .flatMap(exists -> exists
                         ? userRepository.deleteById(id)
                         : Mono.error(new UserNotFoundException(USER_NOT_FOUND_ID + id)));
+    }
+
+    private Mono<UserResponseDTO> createAndSaveUser(UserRequestDTO userRequestDTO) {
+        UserEntity userEntity = userMapper.toEntity(userRequestDTO);
+        return userRepository.save(userEntity)
+                .map(userMapper::toResponseDto)
+                .log();
+    }
+
+    private Mono<Void> validateUserRequest(UserRequestDTO userRequestDTO) {
+        Errors errors = new BeanPropertyBindingResult(userRequestDTO, "userRequestDTO");
+        userValidator.validate(userRequestDTO, errors);
+
+        if (errors.hasErrors()) {
+            return Mono.error(new BadRequestException(errors.getFieldErrors()));
+        }
+
+        return Mono.empty();
+    }
+
+    private Mono<UserEntity> updateExistingUser(UserEntity existingUser, UserRequestDTO newUserData) {
+        existingUser.setName(newUserData.getName());
+        existingUser.setEmail(newUserData.getEmail());
+        existingUser.setPassword(newUserData.getPassword());
+        return userRepository.save(existingUser);
     }
 }
