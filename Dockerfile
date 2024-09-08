@@ -32,5 +32,8 @@ ENV ACTIVE_PROFILE=${ACTIVE_PROFILE}
 
 ENV EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE}
 
+ENV EXP_TIME=${EXP_TIME}
+ENV SECRET_KEY=${SECRET_KEY}
+
 # Command to run the application
 ENTRYPOINT ["sh", "-c", "while ! nc -z task-postgres-db 5432 ; do sleep 1; done; java -jar app.jar"]
