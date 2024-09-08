@@ -2,6 +2,7 @@ package com.example.userservice.controller;
 
 import com.example.userservice.dto.UserRequestDTO;
 import com.example.userservice.dto.UserResponseDTO;
+import com.example.userservice.mapper.UserMapper;
 import com.example.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,6 +33,7 @@ import reactor.core.publisher.Mono;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
     @Operation(summary = "Create a new User", description = "Creates a new user and returns the user.")
@@ -136,5 +139,12 @@ public class UserController {
             @Parameter(description = "ID of the user to be deleted", required = true, example = "1") Long id) {
         return userService.deleteUser(id)
                 .then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build()));
+    }
+
+    @GetMapping("/current")
+    public Mono<UserResponseDTO> getCurrent(ServerWebExchange exchange) {
+        String userEmail = exchange.getRequest().getHeaders().getFirst("username");
+        return userService.getUserByEmail(userEmail)
+                .map(userMapper::toResponseDto);
     }
 }
