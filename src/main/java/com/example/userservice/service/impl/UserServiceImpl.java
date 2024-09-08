@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.example.userservice.commons.Constants.EMAIL_ALREADY_EXISTS;
+import static com.example.userservice.commons.Constants.USER_NOT_FOUND_EMAIL;
 import static com.example.userservice.commons.Constants.USER_NOT_FOUND_ID;
 
 @Slf4j
@@ -47,6 +48,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .map(userMapper::toResponseDto)
                 .switchIfEmpty(Mono.error(new UserNotFoundException(USER_NOT_FOUND_ID + id)));
+    }
+
+    @Override
+    public Mono<UserEntity> getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .switchIfEmpty(Mono.error(new UserNotFoundException(USER_NOT_FOUND_EMAIL + email)));
     }
 
     @Override

@@ -24,4 +24,5 @@ public class Constants {
 
     // Exception messages
     public static final String USER_NOT_FOUND_ID = "User not found with Id: ";
+    public static final String USER_NOT_FOUND_EMAIL = "User not found with Email: ";
 }
