@@ -1,6 +1,5 @@
 package com.example.userservice.controller;
 
-import com.example.userservice.dto.JwtAuthenticationResponse;
 import com.example.userservice.dto.LoginRequest;
 import com.example.userservice.dto.UserRequestDTO;
 import com.example.userservice.service.AuthService;
@@ -56,9 +55,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Authenticate User", description = "Authenticates a user and returns a JWT token.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User authenticated successfully.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = JwtAuthenticationResponse.class))),
+            @ApiResponse(responseCode = "200", description = "User authenticated successfully."),
             @ApiResponse(responseCode = "400", description = "Invalid credentials.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(type = "string", example = "Invalid username or password."))),
